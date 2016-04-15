@@ -1,18 +1,18 @@
 Directions for running the lab ....
 
 1.  Make sure you have VirtualBox running on your machine.
-2.  Install Vagrant on you local machine.  You may follow the instructions here:
+2.  Install Vagrant on your local machine.  You may follow the instructions here:
 
     https://www.vagrantup.com/docs/installation/
 
 
-3.  copy this folder to your computer.  You can use git or download it and move it to your computer
+3.  copy this folder to your computer.  You can use git or download it directly.  computer
 
-    git clone ....
+    git clone git@github.com:marilynwaldman/cuSpark.git
 
     or
 
-       a.  Create a new directory and copy this repo into it
+       a.  Create a new directory, cuSpark and copy the downloaded code into it.
 
 4.  open a terminal window
 5.  from the terminal window change directories to cuSpark:
