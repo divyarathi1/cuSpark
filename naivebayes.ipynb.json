@@ -1,0 +1,283 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### ** (1a) Load and check the data **\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "# load testing library\n",
+    "from test_helper import Test\n",
+    "import os.path\n",
+    "baseDir = os.path.join('data')\n",
+    "inputPath = os.path.join('cs190', 'millionsong.txt')\n",
+    "fileName = os.path.join(baseDir, inputPath)\n",
+    "\n",
+    "numPartitions = 2\n",
+    "rawData = sc.textFile(fileName, numPartitions)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "6724\n",
+      "[u'2001.0,0.884123733793,0.610454259079,0.600498416968,0.474669212493,0.247232680947,0.357306088914,0.344136412234,0.339641227335,0.600858840135,0.425704689024,0.60491501652,0.419193351817', u'2001.0,0.854411946129,0.604124786151,0.593634078776,0.495885413963,0.266307830936,0.261472105188,0.506387076327,0.464453565511,0.665798573683,0.542968988766,0.58044428577,0.445219373624', u'2001.0,0.908982970575,0.632063159227,0.557428975183,0.498263761394,0.276396052336,0.312809861625,0.448530069406,0.448674249968,0.649791323916,0.489868662682,0.591908113534,0.4500023818', u'2001.0,0.842525219898,0.561826888508,0.508715259692,0.443531142139,0.296733836002,0.250213568176,0.488540873206,0.360508747659,0.575435243185,0.361005878554,0.678378718617,0.409036786173', u'2001.0,0.909303285534,0.653607720915,0.585580794716,0.473250503005,0.251417011835,0.326976795524,0.40432273022,0.371154511756,0.629401917965,0.482243251755,0.566901413923,0.463373691946']\n"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "numPoints = rawData.count()\n",
+    "print numPoints\n",
+    "samplePoints = rawData.take(5)\n",
+    "print samplePoints"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1 test passed.\n",
+      "1 test passed.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# TEST Load and check the data (1a)\n",
+    "Test.assertEquals(numPoints, 6724, 'incorrect value for numPoints')\n",
+    "Test.assertEquals(len(samplePoints), 5, 'incorrect length for samplePoints')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### ** (1b) Using `LabeledPoint` **\n",
+    "####  [LabeledPoint](https://spark.apache.org/docs/latest/api/python/pyspark.mllib.html#pyspark.mllib.regression.LabeledPoint) "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "from pyspark.mllib.regression import LabeledPoint\n",
+    "from pyspark.mllib.linalg import Vectors\n",
+    "import numpy as np\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.884123733793,0.610454259079,0.600498416968,0.474669212493,0.247232680947,0.357306088914,0.344136412234,0.339641227335,0.600858840135,0.425704689024,0.60491501652,0.419193351817] 2001.0\n",
+      "12\n"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "def parsePoint(line):\n",
+    "    \"\"\"Converts a comma separated unicode string into a `LabeledPoint`.\n",
+    "\n",
+    "    Args:\n",
+    "        line (unicode): Comma separated unicode string where the first element is the label and the\n",
+    "            remaining elements are features.\n",
+    "\n",
+    "    Returns:\n",
+    "        LabeledPoint: The line is converted into a `LabeledPoint`, which consists of a label and\n",
+    "            features.\n",
+    "    \"\"\"\n",
+    "   \n",
+    "    parts = line.split(',')\n",
+    "    label = float(parts[0])\n",
+    "    features = Vectors.dense([float(x) for x in parts[1:]])\n",
+    "    return LabeledPoint(label, features)\n",
+    "    \n",
+    "\n",
+    "\n",
+    "parsedSamplePoints = map(parsePoint,samplePoints)\n",
+    "\n",
+    "firstPoint = parsedSamplePoints[0]\n",
+    "\n",
+    "firstPointFeatures = firstPoint.features\n",
+    "firstPointLabel = firstPoint.label\n",
+    "print firstPointFeatures, firstPointLabel\n",
+    "\n",
+    "\n",
+    "\n",
+    "d = len(firstPointFeatures)\n",
+    "print d\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1 test passed.\n",
+      "1 test passed.\n",
+      "1 test passed.\n",
+      "1 test passed.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# TEST Using LabeledPoint (1b)\n",
+    "Test.assertTrue(isinstance(firstPointLabel, float), 'label must be a float')\n",
+    "expectedX0 = [0.8841,0.6105,0.6005,0.4747,0.2472,0.3573,0.3441,0.3396,0.6009,0.4257,0.6049,0.4192]\n",
+    "Test.assertTrue(np.allclose(expectedX0, firstPointFeatures, 1e-4, 1e-4),\n",
+    "                'incorrect features for firstPointFeatures')\n",
+    "Test.assertTrue(np.allclose(2001.0, firstPointLabel), 'incorrect label for firstPointLabel')\n",
+    "Test.assertTrue(d == 12, 'incorrect number of features')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### ** Part 4: Train using MLlib Naive Bayes **"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "4003 2721 6724\n",
+      "6724\n"
+     ]
+    }
+   ],
+   "source": [
+    "parsedData= rawData.map(parsePoint)\n",
+    "weights = [.6, .4]\n",
+    "seed = 0\n",
+    "parsedTrainData,  parsedTestData = parsedData.randomSplit(weights, seed)\n",
+    "parsedTrainData.cache()\n",
+    "parsedTestData.cache()\n",
+    "nTrain = parsedTrainData.count()\n",
+    "nTest = parsedTestData.count()\n",
+    "\n",
+    "print nTrain, nTest, nTrain + nTest\n",
+    "print parsedData.count()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "from pyspark.mllib.classification import NaiveBayes, NaiveBayesModel\n",
+    "# Values to use when training the linear regression model\n",
+    "# Train a naive Bayes model.\n",
+    "model = NaiveBayes.train(parsedTrainData, 1.0)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(1992.0, 2001.0), (1992.0, 2001.0)]\n",
+      "0.0205806688717\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Make prediction and test accuracy.\n",
+    "predictionAndLabel = parsedTestData.map(lambda p: (model.predict(p.features), p.label))\n",
+    "print predictionAndLabel.take(2)\n",
+    "accuracy = 1.0 * predictionAndLabel.filter(lambda (x, v): x == v).count() / parsedTestData.count()\n",
+    "print accuracy\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
