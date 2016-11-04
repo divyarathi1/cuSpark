@@ -6,13 +6,13 @@ Directions for running the lab ....
     https://www.vagrantup.com/docs/installation/
 
 
-3.  copy this folder to your computer.  You can use git or download it directly.  computer
+3.  Copy this folder to your computer.  You can use git or download it directly onto your computer
 
     git clone git@github.com:marilynwaldman/cuSpark.git
 
     or
 
-       a.  Create a new directory, cuSpark and copy the downloaded code into it.
+    Create a new directory, cuSpark and copy the downloaded code into it.
 
 4.  open a terminal window
 5.  from the terminal window change directories to cuSpark:
