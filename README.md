@@ -12,7 +12,7 @@ Directions for running the lab ....
 
     or
 
-    Create a new directory, cuSpark and copy the downloaded code into it.
+    Create a new directory, cuSpark, and copy the downloaded code into it.
 
 4.  open a terminal window
 5.  from the terminal window change directories to cuSpark:
